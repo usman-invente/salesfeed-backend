@@ -1,0 +1,78 @@
+import User from '../models/User.js';
+import bcrypt from 'bcrypt';
+
+const DUMMY_HASH = "$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW";
+
+const getUsers = (req, res,next)=>{
+    res.status(200).send('Get Users');
+}
+
+const saveUser = async (req, res,next) => {
+    try {
+        const { name, email,  password, termsAccepted } = req.body;
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+
+        const user = new User({ name, email, password, termsAccepted });
+        await user.save();
+
+        res.status(200).json({ message: 'User saved successfully', data: { name, email, token: user.generateAuthToken() } });
+    } catch (error) {
+       // res.status(500).json({message: 'Error saving user', error: error.message});
+       next(error);
+    }
+}
+
+const login = async (req, res,next) => {
+  try {
+    const { email, password } = req.body;
+
+    // 1. Query the database using await User.findOne
+    const user = await User.findOne({ email });
+
+    const passwordHash = user ? user.password : DUMMY_HASH;
+    const isPasswordValid = await bcrypt.compare(password, passwordHash);
+
+    if (!user || !isPasswordValid) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "Invalid email or password." 
+      });
+    }
+
+  
+    const accessToken = user.generateAuthToken();
+    const refreshToken = user.generateRefreshToken();
+
+    // 3. Set HttpOnly cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged in successfully.",
+      accessToken,
+      user: { 
+        id: user._id, 
+        name: user.name, 
+        email: user.email 
+      }
+    });
+
+  } catch (err) {
+    // Print full error log in server console to identify runtime issues
+    console.error("Login Controller Error:", err);
+    
+   next(err);
+  }
+};
+
+export {getUsers, saveUser, login};
