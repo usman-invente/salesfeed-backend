@@ -75,6 +75,25 @@ const login = async (req, res,next) => {
   }
 };
 
+const logout = async (req, res, next) => {
+  try {
+    // Clear the HTTP-only cookie by setting its expiration to the past
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/", // Must match the path used when the cookie was created
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully.",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const refresh = async (req, res, next) => {
   try {
     const refreshToken = req.cookies.refreshToken;
@@ -120,4 +139,4 @@ const refresh = async (req, res, next) => {
   }
 };
 
-export {getUsers, saveUser, login, refresh};
+export {getUsers, saveUser, login, refresh, logout};

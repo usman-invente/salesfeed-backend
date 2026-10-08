@@ -15,6 +15,8 @@ router.route('/register')
 router.route('/login')
  .post(validate(loginSchema), authController.login);
 
+router.route("/logout").post(authController.logout);
+
 router
   .route('/refresh')   // Applies protect middleware to all HTTP methods on /me
   .post(authController.refresh);     // GET /api/auth/refresh -> Refreshes access token
