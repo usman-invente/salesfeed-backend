@@ -1,6 +1,6 @@
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
-
+import jwt from 'jsonwebtoken';
 const DUMMY_HASH = "$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW";
 
 const getUsers = (req, res,next)=>{
@@ -75,4 +75,49 @@ const login = async (req, res,next) => {
   }
 };
 
-export {getUsers, saveUser, login};
+const refresh = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    console.log("sdsdd");
+    console.log("Received Refresh Token:", refreshToken);
+
+
+    if (!refreshToken) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "Refresh token missing. Please log in again." 
+      });
+    }
+
+    // Verify refresh token using REFRESH_TOKEN_SECRET
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const user = await User.findById(decoded._id);
+    console.log("Decoded Refresh Token:", decoded);
+    if (!user) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "User account no longer exists." 
+      });
+    }
+
+    // Issue new Access Token
+    const accessToken = user.generateAuthToken();
+
+    return res.status(200).json({
+      success: true,
+      accessToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (err) {
+    return res.status(403).json({ 
+      success: false, 
+      message: "Invaliddd or expired refresh token." 
+    });
+  }
+};
+
+export {getUsers, saveUser, login, refresh};
