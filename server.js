@@ -17,6 +17,7 @@ app.use(cors({
     ? 'http://localhost:5173' 
     : 'http://localhost:5173',
   credentials: true,
+  maxAge: 86400 // Preflight response ko 24 hours (86400 seconds) in cache
 }));
 app.use('/', apiRouter);
 

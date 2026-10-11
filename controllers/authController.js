@@ -69,8 +69,7 @@ const login = async (req, res,next) => {
 
   } catch (err) {
     // Print full error log in server console to identify runtime issues
-    console.error("Login Controller Error:", err);
-    
+  
    next(err);
   }
 };
@@ -97,8 +96,7 @@ const logout = async (req, res, next) => {
 const refresh = async (req, res, next) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    console.log("sdsdd");
-    console.log("Received Refresh Token:", refreshToken);
+    
 
 
     if (!refreshToken) {
@@ -111,7 +109,7 @@ const refresh = async (req, res, next) => {
     // Verify refresh token using REFRESH_TOKEN_SECRET
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     const user = await User.findById(decoded._id);
-    console.log("Decoded Refresh Token:", decoded);
+    
     if (!user) {
       return res.status(401).json({ 
         success: false, 
