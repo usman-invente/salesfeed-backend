@@ -29,19 +29,7 @@ export const productSchema = z.object({
     message: "Product condition is required",
   }),
 
-  image: z.object(
-    {
-      mimetype: z.enum(["image/jpeg", "image/png", "image/webp"], {
-        message: "Invalid image format",
-      }),
-      size: z.number().max(5 * 1024 * 1024, {
-        message: "Image size 5MB se kam honi chahiye",
-      }),
-    },
-    {
-      error: "Image is required",
-    },
-  ),
+
 
   seller: z
     .string({ message: "Seller name is required" })
