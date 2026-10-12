@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZES } from "../config/fileConstants.js";
 
 export const productSchema = z.object({
   title: z
@@ -29,7 +30,19 @@ export const productSchema = z.object({
     message: "Product condition is required",
   }),
 
-
+  image: z.object(
+    {
+      mimetype: z.enum(ALLOWED_IMAGE_TYPES, {
+        message: "Invalid image format",
+      }),
+      size: z.number().max(MAX_FILE_SIZES.IMAGE, {
+        message: "Image size 5MB se kam honi chahiye",
+      }),
+    },
+    {
+      error: "Image is required and must be a valid image file",
+    },
+  ),
 
   seller: z
     .string({ message: "Seller name is required" })
