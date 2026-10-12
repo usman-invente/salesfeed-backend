@@ -39,7 +39,7 @@ export const productSchema = z.object({
       }),
     },
     {
-      required_error: "Image upload karna lazmi hai",
+      error: "Image is required",
     },
   ),
 
