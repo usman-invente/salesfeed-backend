@@ -1,10 +1,20 @@
+import fs from "fs";
+
 export const validate = (schema) => (req, res, next) => {
   try {
-    // .parse throws a ZodError automatically if validation fails
-    req.body = schema.parse(req.body);
+    const dataToValidate = { ...req.body };
+
+    // Yeh automaticly multer ke fieldname (jaise "image") ko utha kar object mein dal dega
+    if (req.file) {
+      dataToValidate[req.file.fieldname] = req.file; 
+    }
+
+    req.body = schema.parse(dataToValidate);
     next();
   } catch (err) {
-    // Pass the ZodError straight to global errorHandler
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
     next(err);
   }
 };
