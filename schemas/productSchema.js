@@ -36,7 +36,7 @@ export const productSchema = z.object({
         message: "Invalid image format",
       }),
       size: z.number().max(MAX_FILE_SIZES.IMAGE, {
-        message: "Image size 5MB se kam honi chahiye",
+        message: "Image size exceeds the maximum limit of 5 MB",
       }),
     },
     {
