@@ -9,6 +9,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { logger } from './utils/logger.js';
 
+
 // Connect to MongoDB
 connectDB();
 
@@ -26,6 +27,7 @@ app.use(cors({
   credentials: true,
   maxAge: 86400
 }));
+
 
 // 4. Socket.IO instance initialize karein
 const io = new Server(httpServer, {
@@ -45,18 +47,19 @@ app.use((req, res, next) => {
 
 // 6. Socket.IO Connection Event Listener
 io.on('connection', (socket) => {
-  console.log(` Client connected: ${socket.id}`);
   logger.info(`Client connected: ${socket.id}`);
 
   // Disconnect listener
   socket.on('disconnect', () => {
-    console.log(` Client disconnected: ${socket.id}`);
     logger.info(`Client disconnected: ${socket.id}`);
   });
 });
+
 
 app.use('/', apiRouter);
 
 app.use(errorHandler);
 
-httpServer.listen(3000);
+httpServer.listen(3000, () => {
+  logger.info('HTTP server listening on port 3000');
+});

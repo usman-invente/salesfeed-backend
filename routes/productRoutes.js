@@ -9,6 +9,7 @@ const router = express.Router();
 const uploadImage = createUnifiedUpload("images", ALLOWED_IMAGE_TYPES, MAX_FILE_SIZES.IMAGE); // 5 MB limit
 
 router.route('/product')
-  .post(uploadImage.single("image"),validate(productSchema), productController.submitProductForm);
+  .post(uploadImage.single("image"),validate(productSchema), productController.submitProductForm)
+  .get(productController.getAllProducts);
 
 export default router;
