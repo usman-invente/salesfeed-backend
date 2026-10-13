@@ -1,4 +1,4 @@
-export const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+export const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif"];
 export const ALLOWED_PDF_TYPES = ["application/pdf"];
 
 export const MAX_FILE_SIZES = {
