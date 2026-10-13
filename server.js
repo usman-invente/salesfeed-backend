@@ -8,8 +8,8 @@ import cookieParser from 'cookie-parser';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { logger } from './utils/logger.js';
-
-
+import { fileURLToPath } from 'url';
+import path from 'path';
 // Connect to MongoDB
 connectDB();
 
@@ -20,6 +20,11 @@ const FRONTEND_URL = process.env.CLIENT_URL;
 
 app.use(express.json());
 app.use(cookieParser());
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Restrict CORS to your frontend domain in production
 app.use(cors({
